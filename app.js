@@ -23,10 +23,12 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+app.use(flash());
 
 app.use((req, res, next) => {
-    res.locals.success_msg = req.flash('sucess_msg')
+    res.locals.success_msg = req.flash('success_msg')
     res.locals.error_msg = req.flash('error_msg');
+    next();
 });
 
 
@@ -42,6 +44,6 @@ app.use('/', require('./routes/index'));
 
 app.use('/users', require('./routes/users'));
 
-const Port = process.env.PORT || 5000;
+const Port = process.env.PORT || 9000;
 
 app.listen(Port, console.log(`Server started on Port ${Port}`))

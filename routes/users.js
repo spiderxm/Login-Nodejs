@@ -13,7 +13,6 @@ router.get('/register', (req, res) => res.render("register"));
 
 router.post('/register', (req, res) => {
     const { name, email, password, password2 } = req.body;
-    console.log(name, email, password2, password);
     let errors = [];
 
     //check required fields
@@ -61,7 +60,8 @@ router.post('/register', (req, res) => {
 
                             newUser.save()
                                 .then(user => {
-                                    res.redirect('/user/login');
+                                    req.flash('success_msg', 'You are now registered and can now log-in');
+                                    res.redirect('/users/login');
                                 })
                                 .catch(err => {
                                     console.log(err);
