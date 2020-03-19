@@ -11,12 +11,12 @@ const session = require('express-session');
 const db = require('./config/keys').MongoUrl;
 
 app.use(expressLayouts);
-console.log(db);
 
 app.set('view engine', 'ejs');
 
-const mongoose = require('mongoose');
+app.use(express.urlencoded({ extended: false }));
 
+const mongoose = require('mongoose');
 
 mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("Mongo Db connected"))

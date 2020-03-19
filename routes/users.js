@@ -4,8 +4,54 @@ const router = express.Router();
 
 router.get('/login', (req, res) => res.render("login"));
 
+const mongoose = require('mongoose');
+
+const bcypt = require('bcryptjs');
+const user = require('../models/User');
 
 router.get('/register', (req, res) => res.render("register"));
 
+router.post('/register', (req, res) => {
+    const { name, email, password, password2 } = req.body;
+    let errors = [];
+
+    //check required fields
+    if (!name || !email || !password || !password2) {
+        errors.push({ msg: 'Please fill in all fields' });
+    }
+    if (password != password2) {
+        errors.push({ msg: 'Passowrds do not match' });
+    }
+    if (password.length < 6) {
+        errors.push({ msg: 'Pasword should be atleast 6 character' });
+    }
+    if (errors.length > 0) {
+        res.render('register', {
+            errors,
+            name,
+            email,
+            password,
+            password2
+        })
+    } else {
+
+        user.findOne({ email: email }).then(
+            user => {
+                if (user) {
+                    errors.push({ msg: 'Email already registered' });
+                    res.render('register', {
+                        errors,
+                        name,
+                        email,
+                        password,
+                        password2
+                    });
+
+                } else {
+
+                }
+            });
+    }
+});
 
 module.exports = router;
