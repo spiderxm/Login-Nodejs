@@ -13,6 +13,7 @@ const session = require('express-session');
 const db = require('./config/keys').MongoUrl;
 
 app.use(expressLayouts);
+require('./config/passport')(passport);
 
 app.set('view engine', 'ejs');
 
@@ -23,11 +24,17 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(flash());
 
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg')
     res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+
     next();
 });
 
