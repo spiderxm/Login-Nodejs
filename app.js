@@ -6,6 +6,8 @@ const app = express();
 
 const passport = require('passport');
 
+const flash = require('connect-flash');
+
 const session = require('express-session');
 
 const db = require('./config/keys').MongoUrl;
@@ -15,6 +17,20 @@ app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
 app.use(express.urlencoded({ extended: false }));
+
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
+
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash('sucess_msg')
+    res.locals.error_msg = req.flash('error_msg');
+});
+
+
+app.use(flash());
 
 const mongoose = require('mongoose');
 

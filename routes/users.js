@@ -4,15 +4,16 @@ const router = express.Router();
 
 router.get('/login', (req, res) => res.render("login"));
 
-const mongoose = require('mongoose');
 
-const bcypt = require('bcryptjs');
-const user = require('../models/User');
+const bcrypt = require('bcryptjs');
+
+const User = require('../models/User');
 
 router.get('/register', (req, res) => res.render("register"));
 
 router.post('/register', (req, res) => {
     const { name, email, password, password2 } = req.body;
+    console.log(name, email, password2, password);
     let errors = [];
 
     //check required fields
@@ -32,13 +33,13 @@ router.post('/register', (req, res) => {
             email,
             password,
             password2
-        })
+        });
     } else {
 
-        user.findOne({ email: email }).then(
+        User.findOne({ email: email }).then(
             user => {
                 if (user) {
-                    errors.push({ msg: 'Email already registered' });
+                    errors.push({ msg: 'Email already exists' });
                     res.render('register', {
                         errors,
                         name,
@@ -46,11 +47,29 @@ router.post('/register', (req, res) => {
                         password,
                         password2
                     });
-
                 } else {
+                    const newUser = new User({
+                        name,
+                        email,
+                        password
+                    });
+                    //Hash Password
+                    bcrypt.genSalt(10, (err, salt) => {
+                        bcrypt.hash(newUser.password, salt, (err, hash) => {
+                            if (err) throw err;
+                            newUser.password = hash;
 
+                            newUser.save()
+                                .then(user => {
+                                    res.redirect('/user/login');
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                        });
+                    })
                 }
-            });
+            }).catch(err => console.log(err));
     }
 });
 
